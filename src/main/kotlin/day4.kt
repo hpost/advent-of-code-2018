@@ -35,6 +35,7 @@ fun main() {
     val input = readInput("day4.txt")
 
     println("Part 1: ${part1(input)}")
+    println("Part 2: ${part2(input)}")
 }
 
 private fun part1(input: List<String>): Int {
@@ -55,6 +56,22 @@ private fun part1(input: List<String>): Int {
         .maxBy { (_, count) -> count }!!
     println("$asleepCount times asleep during minute $bestMinute")
     return guardId * bestMinute
+}
+
+private fun part2(input: List<String>): Int {
+    val records = parseRecords(input)
+    val days = parseDays(records)
+    val (guard, minute, count) = days
+        .groupBy { it.id }
+        .map { (guard, days) ->
+            (0..59).map { minute ->
+                Triple(guard, minute, days.sumBy { if (it.minutes[minute]) 1 else 0 })
+            }.maxBy { (_, _, count) -> count }!! // most frequent minute per guard
+        }
+        .maxBy { (_, _, count) -> count }!!
+
+    println("Guard: $guard, Minute: $minute, Count: $count")
+    return guard * minute
 }
 
 private fun parseRecords(input: List<String>): List<Record> {
